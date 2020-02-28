@@ -1,0 +1,19 @@
+---
+
+- name: Create supervisor config file
+  import_role:
+    name: geerlingguy.supervisor
+  vars:
+    supervisor_programs:
+      - name: "{{ project_url }}"
+        command: "php /home/{{ project_url }}/artisan queue:work"
+        state: present
+
+- supervisorctl:
+    name: "{{ project_url }}"
+    state: started
+
+- name: Add laravel scheduler to crontab
+  cron:
+    name: "run scheduler"
+    job: "php /home/{{ project_url }}/artisan schedule:run >> /dev/null 2>&1"

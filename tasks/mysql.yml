@@ -1,0 +1,15 @@
+---
+- name: Create a new database
+  mysql_db:
+    name: "{{ database_name }}"
+    state: present
+
+- name: Create database user
+  mysql_user:
+    name: "{{ database_username }}"
+    password: "{{ database_password }}"
+    priv: "{{ database_name }}.*:ALL"
+    state: present
+
+- import_tasks: config_database.yml
+  when: env_rules.stat.exists == true

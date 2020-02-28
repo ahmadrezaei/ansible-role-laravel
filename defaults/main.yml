@@ -1,0 +1,12 @@
+---
+project_url: example.com
+admin_email:
+
+create_database: false
+database_name: laravel
+database_username: laravel
+database_password: secret
+
+use_redis: true
+schedule: true
+enable_ssl: false

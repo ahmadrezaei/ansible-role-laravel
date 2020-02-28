@@ -1,0 +1,18 @@
+---
+- name: Change session driver to redis
+  lineinfile:
+    path: /home/{{ project_url }}/.env
+    regexp: '^SESSION_DRIVER='
+    line: SESSION_DRIVER=redis
+
+- name: Change cache driver to redis
+  lineinfile:
+    path: /home/{{ project_url }}/.env
+    regexp: '^CACHE_DRIVER='
+    line: CACHE_DRIVER=redis
+
+- name: Change queue connection to redis
+  lineinfile:
+    path: /home/{{ project_url }}/.env
+    regexp: '^QUEUE_CONNECTION='
+    line: QUEUE_CONNECTION=database

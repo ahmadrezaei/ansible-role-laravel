@@ -1,0 +1,47 @@
+---
+- name: check if laravel directory exists
+  stat:
+    path: /home/{{ project_url }}
+  register: directory_rules
+
+- name: check if laravel env file exists
+  stat:
+    path: /home/{{ project_url }}/inv
+  register: env_rules
+
+- name: Clone Laravel
+  composer:
+    command: create-project
+    arguments: laravel/laravel {{ project_url }}
+    working_dir: /home
+    prefer_dist: yes
+  when: directory_rules.stat.exists == false
+
+- include_tasks: debian.yml
+  when: ansible_facts['os_family']|lower == 'debian'
+
+- include_tasks: redhat.yml
+  when: ansible_facts['os_family']|lower == 'redhat'
+
+- name: Add domain to hosts
+  lineinfile:
+    dest: /etc/hosts
+    line: "{{ hostvars[item].ansible_default_ipv4.address }} {{project_url}}"
+    state: present
+  become: yes
+  with_items: "{{ groups.all }}"
+
+# create mysql user
+- include_tasks: mysql.yml
+  when: create_database|bool
+
+- include_tasks: redis.yml
+  when:
+    - use_redis|bool
+    - env_rules.stat.exists == true
+
+- include_tasks: supervisor.yml
+  when: schedule|bool
+
+- include_tasks: certbot.yml
+  when: enable_ssl|bool

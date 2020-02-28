@@ -1,0 +1,18 @@
+---
+- name: Add database to laravel .env
+  lineinfile:
+    path: /home/{{ project_url }}/.env
+    regexp: '^DB_DATABASE='
+    line: DB_DATABASE={{ database_name }}
+
+- name: Add database username to laravel .env
+  lineinfile:
+    path: /home/{{ project_url }}/.env
+    regexp: '^DB_USERNAME='
+    line: DB_USERNAME={{ database_username }}
+
+- name: Add database password to laravel .env
+  lineinfile:
+    path: /home/{{ project_url }}/.env
+    regexp: '^DB_PASSWORD='
+    line: DB_PASSWORD={{ database_password }}

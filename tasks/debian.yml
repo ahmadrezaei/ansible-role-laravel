@@ -1,0 +1,28 @@
+---
+- name: Add Nginx Config (debian)
+  template:
+    src: nginx_debian.j2
+    dest: "/etc/nginx/sites-available/{{ project_url }}.conf"
+
+- name: Create a symbolic link
+  file:
+    src: "/etc/nginx/sites-available/{{ project_url }}.conf"
+    dest: "/etc/nginx/sites-enabled/{{ project_url }}.conf"
+    state: link
+  notify: restart nginx
+
+- name: Change storage permissions
+  file:
+    path: "/home/{{ project_url }}/storage"
+    owner: "www-data"
+    group: "www-data"
+    mode: 0755
+    state: directory
+    recurse: yes
+
+- name: Change php-fpm config file
+  lineinfile:
+    path: "/etc/php/7.4/fpm/pool.d/www.conf"
+    regexp: '^listen = '
+    line: "listen = /var/run/php/php-fpm.sock"
+  notify: restart php-fpm
